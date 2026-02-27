@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Reschedule Interview</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 min-h-screen flex items-center justify-center">
+
+<div class="bg-white p-8 rounded-2xl shadow-xl max-w-md w-full">
+
+  <h2 class="text-2xl font-bold mb-6">Choose a New Time Slot</h2>
+
+  <form method="POST" action="/reschedule" class="space-y-4">
+
+    <input type="hidden" name="resumeId" value="<%= resumeId %>" />
+
+    <% slots.forEach(function(slot) { %>
+      <button
+        type="submit"
+        name="selectedSlot"
+        value="<%= slot %>"
+        class="w-full py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
+      >
+        <%= slot %>
+      </button>
+    <% }); %>
+
+  </form>
+
+</div>
+
+</body>
+</html>

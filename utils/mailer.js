@@ -1,5 +1,6 @@
 require("dotenv").config();
 const nodemailer = require("nodemailer");
+const { createEvent } = require("ics");
 
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
@@ -61,7 +62,7 @@ async function sendInterviewEmail(candidateEmail, candidateName, hrName, resumeI
   </div>
 `).join("")}
     <div style="margin-top:20px;">
-      <a href="http://localhost:3000/reschedule"
+      <a href="http://localhost:3000/reschedule?resumeId=${resumeId}"
          style="
            display:block;
            padding:12px;
@@ -84,12 +85,38 @@ async function sendInterviewEmail(candidateEmail, candidateName, hrName, resumeI
 </div>
 `;
 
-  await transporter.sendMail({
+const event = {
+  start: [2026, 3, 2, 10, 0], // Year, Month, Day, Hour, Minute
+  duration: { hours: 1 },
+  title: "HireOrbit Interview",
+  description: "Technical Interview via HireOrbit",
+  location: "Google Meet (Link shared separately)",
+  organizer: { name: "HireOrbit", email: process.env.EMAIL_USER },
+  attendees: [
+    { name: candidateName, email: candidateEmail },
+    { name: hrName, email: process.env.EMAIL_USER },
+  ],
+};
+
+createEvent(event, (error, value) => {
+  if (error) {
+    console.log(error);
+    return;
+  }
+
+  transporter.sendMail({
     from: `"HireOrbit" <${process.env.EMAIL_USER}>`,
     to: candidateEmail,
-    subject: "Interview Time Slots – HireOrbit",
+    subject: "Interview Confirmed – Calendar Invite",
     html: htmlContent,
+    attachments: [
+      {
+        filename: "interview.ics",
+        content: value,
+      },
+    ],
   });
+});
 }
 
 module.exports = sendInterviewEmail;

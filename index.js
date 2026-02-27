@@ -63,7 +63,9 @@ app.get("/confirm", async (req, res) => {
     resume.selectedSlot = selectedSlot;
     await resume.save();
 
-    res.send(`Interview confirmed for ${selectedSlot}`);
+    return res.render("confirm-success", {
+    selectedSlot,
+    });
 
   } catch (err) {
     console.log(err);
@@ -81,6 +83,74 @@ function isLoggedIn(req, res, next) {
     }
     next();
 }
+
+app.get("/reschedule", async (req, res) => {
+  try {
+    const { resumeId } = req.query;
+
+    if (!resumeId) {
+      return res.send("Invalid request");
+    }
+
+    const resume = await Resume.findById(resumeId);
+
+    if (!resume) {
+      return res.send("Application not found");
+    }
+
+    // Generate new slots (you can make this dynamic later)
+    const newSlots = [
+      "Tuesday 10:00 AM",
+      "Tuesday 2:00 PM",
+      "Wednesday 11:00 AM",
+    ];
+
+    res.render("reschedule", {
+      resumeId,
+      slots: newSlots,
+    });
+
+  } catch (err) {
+    console.log(err);
+    res.send("Something went wrong");
+  }
+});
+
+app.post("/reschedule", async (req, res) => {
+  try {
+    const { resumeId, selectedSlot } = req.body;
+
+    const resume = await Resume.findById(resumeId);
+
+    if (!resume) {
+      return res.send("Application not found");
+    }
+
+    // Optional: Check conflict
+    const conflict = await Resume.findOne({
+      assignedHr: resume.assignedHr,
+      selectedSlot: selectedSlot
+    });
+
+    if (conflict) {
+      return res.render("confirm-error", {
+        message: "Selected slot is already booked."
+      });
+    }
+
+    resume.selectedSlot = selectedSlot;
+    resume.interviewStatus = "Scheduled";
+    await resume.save();
+
+    res.render("confirm-success", {
+      selectedSlot,
+    });
+
+  } catch (err) {
+    console.log(err);
+    res.send("Something went wrong");
+  }
+});
 
 app.get("/", (req, res)=> {
     res.redirect("/landing");
@@ -166,6 +236,7 @@ app.post("/login", async (req, res) => {
 
         req.session.userId = user._id.toString();
         return res.redirect("/jobs");
+
     } catch (err) {
         return res.status(500).render("login", {
             error: "Something went wrong. Please try again.",

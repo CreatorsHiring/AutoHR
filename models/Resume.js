@@ -37,6 +37,16 @@ const resumeSchema = new mongoose.Schema({
     type: String,
   },
   availableSlots: [String],
+  status: {
+  type: String,
+  enum: ["Pending", "Shortlisted", "Rejected"],
+  default: "Pending",
+  },
+  interviewStatus: {
+    type: String,
+    enum: ["Not Scheduled", "Scheduled", "Completed"],
+    default: "Not Scheduled",
+  },
 });
 
 module.exports = mongoose.model("Resume", resumeSchema);

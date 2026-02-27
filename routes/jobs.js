@@ -1,7 +1,6 @@
 const express = require("express");
 const multer = require("multer");
 const Resume = require("../models/Resume");
-const HR = require("../models/HR");
 const assignHR = require("../utils/assignHR");
 const User = require("../models/User");
 const sendInterviewEmail = require("../utils/mailer");
@@ -30,6 +29,33 @@ const upload = multer({
   },
 });
 
+
+// ================= APPLICATION DETAIL =================
+
+router.get("/applications/:id", isLoggedIn, async (req, res) => {
+  try {
+    const resume = await Resume.findOne({
+      _id: req.params.id,
+      userId: req.session.userId,
+    })
+      .populate("assignedHr")
+      .populate("userId");
+
+    if (!resume) {
+      return res.status(404).send("Application not found");
+    }
+
+    res.render("application-detail", { resume });
+
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Something went wrong");
+  }
+});
+
+
+// ================= STATIC JOB DATA =================
+
 const staticJobs = [
   {
     id: "backend",
@@ -54,19 +80,29 @@ const staticJobs = [
   },
 ];
 
+
+// ================= JOB LIST =================
+
 router.get("/jobs", async (req, res) => {
   res.render("jobs", { jobs: staticJobs });
 });
 
+
+// ================= APPLY PAGE =================
+
 router.get("/jobs/:jobId/apply", isLoggedIn, async (req, res) => {
   const { jobId } = req.params;
   const job = staticJobs.find((j) => j.id === jobId);
+
   if (!job) {
     return res.status(404).send("Job not found");
   }
 
   res.render("apply", { job });
 });
+
+
+// ================= APPLY SUBMISSION =================
 
 router.post(
   "/jobs/:jobId/apply",
@@ -76,6 +112,7 @@ router.post(
     try {
       const { jobId } = req.params;
       const job = staticJobs.find((j) => j.id === jobId);
+
       if (!job) {
         return res.status(404).send("Job not found");
       }
@@ -93,19 +130,20 @@ router.post(
         mimeType: req.file.mimetype,
         resumeData: req.file.buffer,
         assignedHr: assignedHr._id,
+        status: "Pending",
+        interviewStatus: "Not Scheduled",
       });
 
       const timeSlots = [
-      "Monday 10:00 AM",
-      "Monday 11:00 AM",
-      "Monday 3:00 PM",
+        "Monday 10:00 AM",
+        "Monday 11:00 AM",
+        "Monday 3:00 PM",
       ];
 
       resume.availableSlots = timeSlots;
 
       await resume.save();
 
-      // NEW: Send Email
       const user = await User.findById(req.session.userId);
 
       await sendInterviewEmail(
@@ -115,15 +153,13 @@ router.post(
         resume._id
       );
 
-      return res.redirect("/jobs");
+      return res.redirect(`/applications/${resume._id}`);
+
     } catch (err) {
       console.log(err);
-      return res
-        .status(500)
-        .send("Something went wrong while submitting your application.");
+      return res.status(500).send("Something went wrong while submitting your application.");
     }
   }
 );
 
 module.exports = router;
-
