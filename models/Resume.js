@@ -33,6 +33,10 @@ const resumeSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  selectedSlot: {
+    type: String,
+  },
+  availableSlots: [String],
 });
 
 module.exports = mongoose.model("Resume", resumeSchema);

@@ -3,6 +3,8 @@ const multer = require("multer");
 const Resume = require("../models/Resume");
 const HR = require("../models/HR");
 const assignHR = require("../utils/assignHR");
+const User = require("../models/User");
+const sendInterviewEmail = require("../utils/mailer");
 
 const router = express.Router();
 
@@ -93,10 +95,29 @@ router.post(
         assignedHr: assignedHr._id,
       });
 
+      const timeSlots = [
+      "Monday 10:00 AM",
+      "Monday 11:00 AM",
+      "Monday 3:00 PM",
+      ];
+
+      resume.availableSlots = timeSlots;
+
       await resume.save();
+
+      // NEW: Send Email
+      const user = await User.findById(req.session.userId);
+
+      await sendInterviewEmail(
+        user.email,
+        user.name,
+        assignedHr.name,
+        resume._id
+      );
 
       return res.redirect("/jobs");
     } catch (err) {
+      console.log(err);
       return res
         .status(500)
         .send("Something went wrong while submitting your application.");

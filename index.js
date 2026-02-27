@@ -30,6 +30,47 @@ main().then(() =>{
     console.log(err);
 })
 
+const Resume = require("./models/Resume");
+
+app.get("/confirm", async (req, res) => {
+  try {
+    const { resumeId, slot } = req.query;
+
+    if (!resumeId || !slot) {
+      return res.send("Invalid confirmation link");
+    }
+
+    const resume = await Resume.findById(resumeId);
+
+    if (!resume) {
+      return res.send("Resume not found");
+    }
+
+    const slotIndex = parseInt(slot) - 1;
+
+    if (!resume.availableSlots || !resume.availableSlots[slotIndex]) {
+    return res.render("confirm-error", {
+        message: "Selected time slot is invalid or expired.",
+    });
+    }
+
+    const selectedSlot = resume.availableSlots[slotIndex];
+
+    if (!selectedSlot) {
+      return res.send("Invalid slot");
+    }
+
+    resume.selectedSlot = selectedSlot;
+    await resume.save();
+
+    res.send(`Interview confirmed for ${selectedSlot}`);
+
+  } catch (err) {
+    console.log(err);
+    res.send("Something went wrong");
+  }
+});
+
 async function main(){
     await mongoose.connect("mongodb://127.0.0.1:27017/AutoHR");
 }
