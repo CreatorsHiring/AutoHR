@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Apply — <%= job.title %> | HireOrbit</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/css/styles.css" />
+  </head>
+  <body class="page page--auth">
+    <header class="site-header">
+      <nav class="navbar" aria-label="Primary">
+        <div class="navbar__brand">
+          <a href="/landing" class="navbar__logo" aria-label="HireOrbit home">
+            <span class="navbar__logo-mark" aria-hidden="true"></span>
+            <span class="navbar__logo-text">HireOrbit</span>
+          </a>
+        </div>
+
+        <div class="navbar__links" id="navbar-menu">
+          <a href="/landing" class="navbar__link">Home</a>
+          <a href="/jobs" class="navbar__link navbar__link--active">Jobs</a>
+          <a href="/logout" class="navbar__link">Logout</a>
+        </div>
+      </nav>
+    </header>
+
+    <main class="main">
+      <section class="section" aria-labelledby="apply-heading">
+        <div class="section__header">
+          <h1 class="section__title" id="apply-heading">Apply for <%= job.title %></h1>
+          <p class="section__subtitle">
+            Upload your resume as a PDF. Our team will review and get back to you.
+          </p>
+        </div>
+
+        <div class="auth">
+          <div class="feature-card auth__card">
+            <form
+              action="/jobs/<%= job.id %>/apply"
+              method="POST"
+              enctype="multipart/form-data"
+            >
+              <div class="auth__fields">
+                <label class="auth__field">
+                  <span class="auth__label">Resume (PDF only, max 5MB)</span>
+                  <input
+                    type="file"
+                    name="resume"
+                    accept="application/pdf"
+                    required
+                    class="auth__input"
+                  />
+                </label>
+
+                <button class="button button--primary" type="submit">
+                  Submit Application
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="/js/main.js" defer></script>
+  </body>
+</html>
+

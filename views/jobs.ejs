@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Jobs — HireOrbit</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/css/styles.css" />
+  </head>
+  <body class="page page--landing">
+    <header class="site-header">
+      <nav class="navbar" aria-label="Primary">
+        <div class="navbar__brand">
+          <a href="/landing" class="navbar__logo" aria-label="HireOrbit home">
+            <span class="navbar__logo-mark" aria-hidden="true"></span>
+            <span class="navbar__logo-text">HireOrbit</span>
+          </a>
+        </div>
+
+        <div class="navbar__links" id="navbar-menu">
+          <a href="/landing" class="navbar__link">Home</a>
+          <a href="/jobs" class="navbar__link navbar__link--active">Jobs</a>
+          <a href="/logout" class="navbar__link">Logout</a>
+        </div>
+      </nav>
+    </header>
+
+    <main class="main">
+      <section class="section section--features" aria-labelledby="jobs-heading">
+        <div class="section__header">
+          <h1 class="section__title" id="jobs-heading">Open Roles</h1>
+          <p class="section__subtitle">
+            Explore curated opportunities and apply with your resume in a few clicks.
+          </p>
+        </div>
+
+        <div class="features-grid">
+          <% jobs.forEach(function(job) { %>
+            <article class="feature-card feature-card--hover">
+              <h2 class="feature-card__title"><%= job.title %></h2>
+              <p class="feature-card__description">
+                <strong><%= job.location %></strong> · <%= job.type %><br />
+                <%= job.summary %>
+              </p>
+              <div class="auth__fields">
+                <a href="/jobs/<%= job.id %>/apply" class="button button--primary">
+                  Apply Now
+                </a>
+              </div>
+            </article>
+          <% }); %>
+        </div>
+      </section>
+    </main>
+
+    <script src="/js/main.js" defer></script>
+  </body>
+</html>
+

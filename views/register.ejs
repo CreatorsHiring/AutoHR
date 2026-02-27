@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Register — HireOrbit</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/css/styles.css" />
+  </head>
+  <body class="page page--auth">
+    <header class="site-header">
+      <nav class="navbar" aria-label="Primary">
+        <div class="navbar__brand">
+          <a href="/landing" class="navbar__logo" aria-label="HireOrbit home">
+            <span class="navbar__logo-mark" aria-hidden="true"></span>
+            <span class="navbar__logo-text">HireOrbit</span>
+          </a>
+        </div>
+
+        <div class="navbar__links" id="navbar-menu">
+          <a href="/landing" class="navbar__link">Home</a>
+          <a href="/login" class="navbar__link">Login</a>
+          <a href="/jobs" class="button button--primary navbar__cta">Explore Careers</a>
+        </div>
+      </nav>
+    </header>
+
+    <main class="main">
+      <section class="section" aria-labelledby="register-heading">
+        <div class="section__header">
+          <h1 class="section__title" id="register-heading">Create your account</h1>
+          <p class="section__subtitle">Start exploring smarter opportunities in minutes.</p>
+        </div>
+
+        <div class="auth">
+          <div class="feature-card auth__card">
+            <% if (error) { %>
+              <p class="auth__error" role="alert"><%= error %></p>
+            <% } %>
+
+            <form action="/register" method="POST" autocomplete="on">
+              <div class="auth__fields">
+                <label class="auth__field">
+                  <span class="auth__label">Name</span>
+                  <input
+                    name="name"
+                    type="text"
+                    required
+                    value="<%= form?.name || '' %>"
+                    autocomplete="name"
+                    class="auth__input"
+                  />
+                </label>
+
+                <label class="auth__field">
+                  <span class="auth__label">Email</span>
+                  <input
+                    name="email"
+                    type="email"
+                    required
+                    value="<%= form?.email || '' %>"
+                    autocomplete="email"
+                    class="auth__input"
+                  />
+                </label>
+
+                <label class="auth__field">
+                  <span class="auth__label">Password</span>
+                  <input
+                    name="password"
+                    type="password"
+                    required
+                    autocomplete="new-password"
+                    class="auth__input"
+                  />
+                </label>
+
+                <button class="button button--primary" type="submit">Register</button>
+
+                <p class="section__subtitle auth__hint">
+                  Already have an account? <a href="/login" class="auth__link">Log in</a>
+                </p>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="/js/main.js" defer></script>
+  </body>
+</html>
