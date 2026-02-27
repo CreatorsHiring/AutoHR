@@ -2,6 +2,7 @@ const express = require("express");
 const multer = require("multer");
 const Resume = require("../models/Resume");
 const HR = require("../models/HR");
+const assignHR = require("../utils/assignHR");
 
 const router = express.Router();
 
@@ -81,14 +82,7 @@ router.post(
         return res.status(400).send("Resume file is required and must be a PDF.");
       }
 
-      const activeHrs = await HR.find({ isActive: true }).sort({ currentLoad: 1 });
-      if (!activeHrs || activeHrs.length === 0) {
-        return res.status(500).send("No active HR available for assignment.");
-      }
-
-      const assignedHr = activeHrs[0];
-      assignedHr.currentLoad += 1;
-      await assignedHr.save();
+      const assignedHr = await assignHR();
 
       const resume = new Resume({
         userId: req.session.userId,
